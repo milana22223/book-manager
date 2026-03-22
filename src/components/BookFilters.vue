@@ -1,16 +1,16 @@
 <template>
   <div class="filters">
     <div class="search">
-      <input 
+      <input
         v-model="searchQuery"
         type="text"
-        placeholder="Поиск по названию или автору..."
+        placeholder="🔍 Поиск по названию или автору..."
       />
     </div>
     
     <div class="filter-buttons">
-      <button 
-        v-for="option in filterOptions" 
+      <button
+        v-for="option in filterOptions"
         :key="option.value"
         @click="$emit('update:filter', option.value)"
         :class="['filter-btn', { active: filter === option.value }]"
@@ -20,7 +20,12 @@
     </div>
     
     <div class="stats">
-      <p>Всего: {{ total }} | Прочитано: {{ completed }} | Осталось: {{ total - completed }}</p>
+      <p>
+        📊 Всего: {{ total }} | 
+        ✓ Прочитано: {{ completed }} | 
+        📖 Осталось: {{ total - completed }} |
+        ⭐ Избранные: {{ favorites }}
+      </p>
     </div>
   </div>
 </template>
@@ -34,13 +39,15 @@ defineEmits(['update:filter'])
 const searchQuery = defineModel('searchQuery')
 
 const filterOptions = [
-  { value: 'all', label: 'Все' },
+  { value: 'all', label: 'Все книги' },
   { value: 'unread', label: 'Непрочитанные' },
-  { value: 'read', label: 'Прочитанные' }
+  { value: 'read', label: 'Прочитанные' },
+  { value: 'favorite', label: '⭐ Избранные' }
 ]
 
 const total = computed(() => props.books.length)
 const completed = computed(() => props.books.filter(b => b.completed).length)
+const favorites = computed(() => props.books.filter(b => b.favorite).length)
 </script>
 
 <style scoped>
@@ -68,6 +75,7 @@ const completed = computed(() => props.books.filter(b => b.completed).length)
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
+  flex-wrap: wrap;
 }
 
 .filter-btn {

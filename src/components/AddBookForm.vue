@@ -1,9 +1,9 @@
 <template>
   <form @submit.prevent="handleSubmit" class="add-form">
-    <h2>Добавить новую книгу</h2>
+    <h2>📚 Добавить новую книгу</h2>
     
     <div class="form-group">
-      <input 
+      <input
         v-model="formData.title"
         type="text"
         placeholder="Название книги"
@@ -12,7 +12,7 @@
     </div>
     
     <div class="form-group">
-      <input 
+      <input
         v-model="formData.author"
         type="text"
         placeholder="Автор"
@@ -28,6 +28,7 @@
         <option value="Детектив">Детектив</option>
         <option value="Научная">Научная</option>
         <option value="Поэзия">Поэзия</option>
+        <option value="Биография">Биография</option>
       </select>
     </div>
     
@@ -48,7 +49,6 @@ const formData = reactive({
 
 const handleSubmit = () => {
   emit('add-book', { ...formData })
-  // Очистка формы
   formData.title = ''
   formData.author = ''
   formData.genre = ''

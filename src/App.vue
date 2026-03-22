@@ -1,20 +1,21 @@
 <template>
   <div class="app">
     <header>
-      <h1>Менеджер книг</h1>
+      <h1>📚 Менеджер книг</h1>
       <p>Управляй своей библиотекой</p>
     </header>
-
+    
     <main>
       <AddBookForm @add-book="addBook" />
       
-      <BookFilters 
+      <BookFilters
         v-model:searchQuery="searchQuery"
         v-model:filter="currentFilter"
         :books="books"
       />
       
       <div v-if="filteredBooks.length === 0" class="empty-state">
+        <p>📭</p>
         <p>Книги не найдены :(</p>
         <p>Добавьте первую книгу или измените параметры поиска</p>
       </div>
@@ -27,6 +28,7 @@
           @toggle="toggleBook(book.id)"
           @delete="deleteBook(book.id)"
           @rate="rateBook(book.id, $event)"
+          @toggle-favorite="toggleFavorite(book.id)"
         />
       </div>
     </main>
@@ -52,7 +54,7 @@ if (savedBooks) {
 const currentFilter = ref('all')
 const searchQuery = ref('')
 
-// Сохранение изменений
+// Сохранение изменений в localStorage
 watch(books, (newBooks) => {
   localStorage.setItem('books', JSON.stringify(newBooks))
 }, { deep: true })
@@ -63,12 +65,13 @@ const addBook = (bookData) => {
     id: Date.now(),
     ...bookData,
     completed: false,
-    rating: 0
+    rating: 0,
+    favorite: false
   }
   books.value.push(newBook)
 }
 
-// Переключение статуса
+// Переключение статуса прочтения
 const toggleBook = (id) => {
   const book = books.value.find(b => b.id === id)
   if (book) {
@@ -76,6 +79,14 @@ const toggleBook = (id) => {
     if (!book.completed) {
       book.rating = 0
     }
+  }
+}
+
+// Переключение статуса "Избранное"
+const toggleFavorite = (id) => {
+  const book = books.value.find(b => b.id === id)
+  if (book) {
+    book.favorite = !book.favorite
   }
 }
 
@@ -100,6 +111,7 @@ const filteredBooks = computed(() => {
     .filter(book => {
       if (currentFilter.value === 'unread') return !book.completed
       if (currentFilter.value === 'read') return book.completed
+      if (currentFilter.value === 'favorite') return book.favorite
       return true
     })
     .filter(book => {
@@ -143,6 +155,11 @@ header {
 header h1 {
   font-size: 2.5em;
   margin-bottom: 5px;
+}
+
+header p {
+  font-size: 1.1em;
+  opacity: 0.9;
 }
 
 main {
